@@ -1,34 +1,90 @@
-import pyttsx3
-import random
+# from TTS.api import TTS
 
-engine = pyttsx3.init()
+# from kokoro import KPipeline
+# import soundfile as sf
 
-voices = engine.getProperty('voices')
-#engine.setProperty('voice', voices[0].id)
-
-
-def soundifyAuthor(title, asker):
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[random.randrange(0,2)].id)
-
-    engine.save_to_file(title, "temp/"+asker+"/temp"+"0"+".mp3")
-    engine.runAndWait()
+import torchaudio as ta
+from chatterbox.tts import ChatterboxTTS
 
 
-def soundifyComment(comment, index, sectionid, asker):
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[0].id)
+# def tts(text, speaker, filepath, language):
+#     tts_obj = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to('mps')
+#     tts_obj.tts_to_file(
+#         text=text,
+#         file_path=filepath,
+#         speaker_wav=speaker,
+#         language=language
+#     )
 
-    engine.save_to_file(comment, "temp/"+asker+"/temp"+str(index)+"_"+str(sectionid)+".mp3")
-    engine.runAndWait()
+# def tts(text, speaker, filepath, language):
+#     pipeline = KPipeline(lang_code='a')
+#     generator = pipeline(text, voice='af_heart')
+#     for i, (gs, ps, audio) in enumerate(generator):
+#         print(i, gs, ps)
+#         sf.write(f'{filepath}', audio, 24000)
 
-def soundifyPost(comment, index, sectionid, asker):
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[0].id)
+model = ChatterboxTTS.from_pretrained(device="mps")
 
+
+def tts(text, speaker, filepath, language):
+    wav = model.generate(text, audio_prompt_path=speaker)
+    ta.save(filepath, wav, model.sr)
+
+
+def soundifyAuthor(title, speaker, asker, lang_code, raw_title):
+    tts(
+        title,
+        speaker,
+        "temp/" + asker + "/temp" + "0" + ".mp3",
+        lang_code,
+    )
+
+    with open("temp/" + asker + "/temp" + "0" + ".txt", "a") as f:
+        f.write(title)
+
+    with open(
+        "temp/" + asker + "/temp" + "0" + "_raw" + ".txt", "a"
+    ) as f:
+        f.write(raw_title)
+
+
+def soundifyComment(comment, speaker, index, sectionid, asker, lang_code, raw_comment):
+    tts(
+        comment,
+        speaker,
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + ".mp3",
+        lang_code,
+    )
+
+    with open(
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + ".txt", "a"
+    ) as f:
+        f.write(comment)
+
+    with open(
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + "_raw" + ".txt", "a"
+    ) as f:
+        f.write(raw_comment)
+
+
+def soundifyPost(comment, speaker, index, sectionid, asker, lang_code, raw_comment):
     ## make numbers appear 01, 02, ... 09, 10, 11 to maintain order in directory
     if len(str(sectionid)) < 2:
         sectionid = "0" + str(sectionid)
 
-    engine.save_to_file(comment, "temp/"+asker+"/temp"+str(index)+"_"+str(sectionid)+".mp3")
-    engine.runAndWait()
+    tts(
+        comment,
+        speaker,
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + ".mp3",
+        lang_code,
+    )
+
+    with open(
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + ".txt", "a"
+    ) as f:
+        f.write(comment)
+
+    with open(
+        "temp/" + asker + "/temp" + str(index) + "_" + str(sectionid) + "_raw" + ".txt", "a"
+    ) as f:
+        f.write(raw_comment)

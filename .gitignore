@@ -131,7 +131,10 @@ dmypy.json
 
 
 exports/*
-bg_vids/*
+assets/bg_vids/*
+assets/fonts/*
+assets/music/*
+assets/voice_samples/*
 
 utils/__pycache__/
 *.pyc
@@ -139,3 +142,5 @@ utils/__pycache__/
 client_details.json
 
 goals.md
+
+.DS_Store
