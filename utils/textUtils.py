@@ -1,5 +1,45 @@
 import re
 
+abbreviation_dict = {
+    "AITA": "Am I the Asshole",
+    "WIBTA" : "Would I be the Asshole",
+    "TIFU": "Today I messed up",
+    "ELI5": "Explain Like I'm Five",
+    "NSFW": "Not Safe For Work",
+    "NSFL": "Not Safe For Life",
+    "IMO": "In My Opinion",
+    "IMHO": "In My Humble Opinion",
+    "TLDR": "Too Long; Didn't Read",
+    "AMA": "Ask Me Anything",
+    "IIRC": "If I Recall Correctly",
+    "IDK": "I Don't Know",
+    "IRL": "In Real Life",
+    "LPT": "Life Pro Tip",
+    "DAE": "Does Anyone Else",
+    "CMV": "Change My View",
+    "SMH": "Shaking My Head",
+    "TIL": "Today I Learned",
+    "YMMV": "Your Mileage May Vary",
+    "BRB": "Be Right Back",
+    "LOL": "Laugh Out Loud",
+    "ROFL": "Rolling On the Floor Laughing",
+    "ICYMI": "In Case You Missed It",
+    "FTFY": "Fixed That For You",
+    "AFAIK": "As Far As I Know",
+    "AAMOF": "As A Matter Of Fact",
+    "BUMP": "Bring Up My Post",
+    "MFW": "My Face When",
+    "MRW": "My Reaction When",
+    "ITT": "In This Thread",
+    "TBT": "Throwback Thursday",
+    "SFW": "Safe For Work",
+    "IAMA": "I Am A",
+    "RTFM": "Read The Fucking Manual",
+    "NPC": "Non-Player Character",
+    "DM": "Direct Message",
+    "SIL": "Sister in Law",
+    "BIL": "Brother in Law"
+}
 
 def split_on_punctuation(text, max_length=250):
     sentences = re.split(r"(?<=[.!?])\s+|\n+", text)
@@ -22,9 +62,10 @@ def split_on_punctuation(text, max_length=250):
 
 def replace_abbreviations(text):
     text = text.replace("’", "'")
-    text = re.sub(r"\ba ?i ?t ?a\b", "Am i the asshole", text, flags=re.IGNORECASE)
-    text = re.sub(r"\bt ?i ?f ?u\b", "Today i messed up", text, flags=re.IGNORECASE)
-    text = re.sub(r"\bah\b", "asshole", text, flags=re.IGNORECASE)
+    for k,v in abbreviation_dict.items():
+        abv = r"\b" + r" ?".join(list(k)) + r"\b"
+        text = re.sub(abv, v, text, flags=re.IGNORECASE)
+    text = re.sub(r"\bAH\b", "asshole", text)
     text = text.replace("/", " slash ")
     # Add space between numbers and letters, but keep multi-digit numbers together
     text = re.sub(r"(\d+)([A-Za-z])", r"\1 \2", text)
